@@ -1,18 +1,20 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Product } from './product';
 import { ProductList } from "./product/product-list/product-list";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ProductList],
+  imports: [RouterOutlet, ProductList, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   protected readonly title = signal('EMPRESAS ACME');
+  listFilter = signal('');
 
-  products: Product[] = [
+  products = signal<Product[]>([
     {
       productId: 1,
       productName: 'Mini Consola Nintendo NES Edición Clásica',
@@ -43,6 +45,12 @@ export class App {
       starRating: 3.9,
       imageUrl: 'xbox.png'
     }
-  ]
+  ]);
+
+  filteredProducts = computed(() =>
+    this.products().filter(p =>
+      p.productName.toLowerCase().includes(this.listFilter().toLowerCase())
+    )
+  );
 }
 
