@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Product } from '../../product';
+import { IProduct } from '../../product';
 import { CommonModule } from '@angular/common';
 
 import { StarComponent } from '../../shared/star/star.component';
@@ -28,8 +28,8 @@ export class ProductList {
     console.log('Hijo: ngOnDestroy');
   }
 
-  
-  @Input('datos') products: Product[] = [];
+
+  @Input('datos') products: IProduct[] = [];
 
   showImage: boolean = false;
 
