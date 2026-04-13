@@ -25,7 +25,8 @@
                     <tr>
                         <td>
                             @if (showImage){
-                              <img [src]="producto.imageUrl" alt="{{ producto.productName }}" class="img-thumbnail" style="max-width: 100px;">
+                              <img [src]="producto.imageUrl | defaultImage" [alt]="producto.productName" class="img-thumbnail"
+                                    style="max-width: 100px;">
                             }
 
                         </td>
@@ -33,7 +34,7 @@
                         <td>{{ producto.productCode }}</td>
                         <td>{{ producto.releaseDate }}</td>
                         <td>{{ producto.price }}</td>
-                        <td>{{ producto.starRating }}</td>
+                        <td><app-star [rating]="producto.starRating"></app-star></td>
                     </tr>
                     }
                 </tbody>

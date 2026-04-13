@@ -11,6 +11,27 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './app.css'
 })
 export class App {
+
+  constructor(){
+    console.log('Padre: constructor');
+  }
+  ngOnInit(): void{
+    console.log('Padre: ngOnInit');
+  }
+  ngOnChanges(): void{
+    console.log('Padre: ngOnChanges');
+  }
+  ngOnDestroy(): void{
+    console.log('Padre: ngOnDestroy');
+  }
+  datoRecibido = signal<any>('');
+  
+
+  showChildren = signal(true);
+  toggleChildren(): void {
+    this.showChildren.update(value=> !value);
+  }
+
   protected readonly title = signal('EMPRESAS ACME');
   listFilter = signal('');
 
@@ -42,7 +63,7 @@ export class App {
       releaseDate: '2020-10-30',
       description: 'Negro Carbono. Probado sin caja.',
       price: 40000,
-      starRating: 3.9,
+      starRating: 3.5,
       imageUrl: 'xbox.png'
     }
   ]);
