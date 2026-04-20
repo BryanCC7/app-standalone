@@ -18,8 +18,10 @@ export class App {
     console.log('Padre: constructor');
   }
   ngOnInit(): void{
-    this.products.set(this.productService.getProducts());
-    console.log('Padre: ngOnInit');
+    this.productService.getProducts().subscribe((products: IProduct[])=>{
+      this.products.set(products);
+      console.log(this.products());
+    });
   }
   ngOnChanges(): void{
     console.log('Padre: ngOnChanges');
