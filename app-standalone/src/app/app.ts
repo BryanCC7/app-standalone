@@ -47,5 +47,29 @@ export class App {
       p.productName.toLowerCase().includes(this.listFilter().toLowerCase())
     )
   );
+
+
+  crearProducto() {
+    let datos: any = {
+      name: `Producto Nuevo ${Math.round(Math.random()* (100 - 1) + 1 )}` ,
+      code: this.productService.generateProductCode(),
+      date: '2024-01-01',
+      price: Math.round(Math.random ()* (40000 - 10000) + 100000 ) ,
+      description: 'Descripción del producto nuevo',
+      rate: Math.round(Math.random( )* (200 - 1) + 1 ) ,
+      image: 'gamuza_hush.jpg'
+    }
+    this.guardarProducto (datos);
+  }
+
+  guardarProducto(product: IProduct){
+    console.log('Guardando producto: ', product);
+    this.productService.saveProduct(product).pipe(
+      switchMap(()=> this.productService.getProducts())
+    ).subscribe(products =>  this.products.set(products))
+  }
+
+
+
 }
 

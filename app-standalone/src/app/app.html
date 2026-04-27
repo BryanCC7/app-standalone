@@ -19,11 +19,18 @@
         <div class="col-md-3">
           <input type="text" [(ngModel)]="listFilter" placeholder="Escribe para buscar...">
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
           Filtrado por: {{ listFilter() }}
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary" (click)="crearProducto()">
+            Crear Producto
+          </button>
         </div>
       </div>
     </div>
   </div>
-  <app-product-list [datos]="filteredProducts()"></app-product-list>
+  <app-product-list [datos]="filteredProducts()" (updatedProducts)="products.set($event)">
+    
+  </app-product-list>
 </div>

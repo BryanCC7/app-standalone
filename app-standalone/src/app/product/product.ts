@@ -16,4 +16,23 @@ export class Product {
     return this.http.get<IProduct[]>('http://localhost:3000/productos').pipe(map((resp:any)=> resp.productos));
   }
 
+  generateProductCode(): string {
+    const randomNum = Math.floor(Math.random()*(100-10)+10);
+    return `PROD${randomNum.toString().padStart(3, '0')}`;  
+  }
+
+  saveProducts(product: IProduct): Observable<IProduct> {
+    return this.http.post<IProduct>('http://localhost:3000/productos', product);
+  }
+
+  deleteProduct(id: number): Observable<void>{
+    return this.http.delete<void>(`http://localhost:3000/productos/${id}`);
+  }
+
+  updateProduct(id: number, product: IProduct): Observable<IProduct> {
+    return this.http.put<IProduct>(`http://localhost:3000/productos/${id}`, product)
+  }
+
+  
+
 }
