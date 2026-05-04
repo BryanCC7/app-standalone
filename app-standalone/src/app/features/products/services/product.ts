@@ -1,13 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
-import { Injectable } from '@angular/core';
-import { IProduct } from '../product';
+import { map } from 'rxjs/operators';
+import { Injectable, signal} from '@angular/core';
+import { IProduct } from '../interfaces/product';
+
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class Product {
+  products = signal<IProduct[]>([]);
 
 
   constructor(private http: HttpClient){}

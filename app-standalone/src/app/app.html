@@ -34,7 +34,7 @@
       }
     </div>
   </div>
-  <app-product-list [datos]="filteredProducts()" (updatedProducts)="products.set($event)">
+  <app-product-list [datos]="filteredProducts()" (updatedProducts)="this.productService.products.set($event)">
     
   </app-product-list>
 </div>

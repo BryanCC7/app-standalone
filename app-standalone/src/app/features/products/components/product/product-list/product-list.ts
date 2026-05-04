@@ -1,11 +1,11 @@
 import { Component, Input, output } from '@angular/core';
-import { IProduct } from '../../product';
+import { IProduct } from '../../../interfaces/product';
 import { CommonModule } from '@angular/common';
 
-import { StarComponent } from '../../shared/star/star.component';
+import { StarComponent } from '../../../../../shared/star/star.component';
 import { DatePipe} from '@angular/common';
-import { ImagePipe } from '../../shared/image-pipe';
-import { Product } from '../product';
+import { ImagePipe } from '../../../../../shared/image-pipe';
+import { Product } from '../../../services/product';
 import { switchMap } from 'rxjs';
 
 @Component({

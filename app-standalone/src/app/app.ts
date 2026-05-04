@@ -1,13 +1,13 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { IProduct } from './product';
-import { ProductList } from "./product/product-list/product-list";
+import { IProduct } from './features/products/interfaces/product';
+import { ProductList } from "./features/products/components/product/product-list/product-list";
 import { FormsModule } from '@angular/forms';
-import { ModalAdd } from './services/modal-add/modal-add';
+import { ModalAdd } from './features/products/components/product/modal-add/modal-add';
 
 import { switchMap } from 'rxjs/operators';
 
-import { Product } from './product/product'
+import { Product } from './features/products/services/product'
 
 @Component({
   selector: 'app-root',
@@ -22,8 +22,7 @@ export class App {
   }
   ngOnInit(): void{
     this.productService.getProducts().subscribe((products: IProduct[])=>{
-      this.products.set(products);
-      console.log(this.products());
+      this.productService.products.set(products);
     });
   }
   ngOnChanges(): void{
@@ -43,10 +42,8 @@ export class App {
   protected readonly title = signal('EMPRESAS ACME');
   listFilter = signal('');
 
-  products = signal<IProduct[]>([]);
-
   filteredProducts = computed(() =>
-    this.products().filter(p =>
+    this.productService.products().filter(p =>
       p.productName.toLowerCase().includes(this.listFilter().toLowerCase())
     )
   );
@@ -69,7 +66,7 @@ export class App {
     console.log('Guardando producto: ', product);
     this.productService.saveProducts(product).pipe(
       switchMap(()=> this.productService.getProducts())
-    ).subscribe(products =>  this.products.set(products))
+    ).subscribe(products =>  this.productService.products.set(products))
   }
 
   isModalOpen = signal(false);
