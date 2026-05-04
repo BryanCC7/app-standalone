@@ -23,11 +23,15 @@
           Filtrado por: {{ listFilter() }}
         </div>
         <div class="col-md-2">
-          <button class="btn btn-primary" (click)="crearProducto()">
+          <button class="btn btn-primary" (click)="abrirModal()">
             Crear Producto
           </button>
         </div>
       </div>
+      <br>
+      @if (isModalOpen()) {
+        <app-modal-add (close)="cerrarModal()"></app-modal-add>
+      }
     </div>
   </div>
   <app-product-list [datos]="filteredProducts()" (updatedProducts)="products.set($event)">

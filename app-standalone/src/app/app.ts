@@ -3,12 +3,15 @@ import { RouterOutlet } from '@angular/router';
 import { IProduct } from './product';
 import { ProductList } from "./product/product-list/product-list";
 import { FormsModule } from '@angular/forms';
+import { ModalAdd } from './services/modal-add/modal-add';
+
+import { switchMap } from 'rxjs/operators';
 
 import { Product } from './product/product'
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ProductList, FormsModule],
+  imports: [RouterOutlet, ProductList, FormsModule, ModalAdd],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -64,10 +67,25 @@ export class App {
 
   guardarProducto(product: IProduct){
     console.log('Guardando producto: ', product);
-    this.productService.saveProduct(product).pipe(
+    this.productService.saveProducts(product).pipe(
       switchMap(()=> this.productService.getProducts())
     ).subscribe(products =>  this.products.set(products))
   }
+
+  isModalOpen = signal(false);
+  
+  abrirModal(){
+    console.log('Abriendo modal...');
+    this.isModalOpen.set(true);
+    console.log(this.isModalOpen);
+  }
+
+  cerrarModal(){
+    console.log('Cerrando Modal...');
+    this.isModalOpen.set(false);
+  }
+
+
 
 
 
