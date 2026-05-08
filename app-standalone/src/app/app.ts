@@ -1,90 +1,13 @@
-import { Component, computed, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { IProduct } from './features/products/interfaces/product';
-import { ProductList } from "./features/products/components/product/product-list/product-list";
-import { FormsModule } from '@angular/forms';
-import { ModalAdd } from './features/products/components/product/modal-add/modal-add';
-
-import { switchMap } from 'rxjs/operators';
-
-import { Product } from './features/products/services/product'
+import { Component, signal } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
-  imports: [RouterOutlet, ProductList, FormsModule, ModalAdd],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-
-  constructor(private productService: Product){
-    console.log('Padre: constructor');
-  }
-  ngOnInit(): void{
-    this.productService.getProducts().subscribe((products: IProduct[])=>{
-      this.productService.products.set(products);
-    });
-  }
-  ngOnChanges(): void{
-    console.log('Padre: ngOnChanges');
-  }
-  ngOnDestroy(): void{
-    console.log('Padre: ngOnDestroy');
-  }
-  datoRecibido = signal<any>('');
-  
-
-  showChildren = signal(true);
-  toggleChildren(): void {
-    this.showChildren.update(value=> !value);
-  }
-
-  protected readonly title = signal('EMPRESAS ACME');
-  listFilter = signal('');
-
-  filteredProducts = computed(() =>
-    this.productService.products().filter(p =>
-      p.productName.toLowerCase().includes(this.listFilter().toLowerCase())
-    )
-  );
-
-
-  crearProducto() {
-    let datos: any = {
-      name: `Producto Nuevo ${Math.round(Math.random()* (100 - 1) + 1 )}` ,
-      code: this.productService.generateProductCode(),
-      date: '2024-01-01',
-      price: Math.round(Math.random ()* (40000 - 10000) + 100000 ) ,
-      description: 'Descripción del producto nuevo',
-      rate: Math.round(Math.random( )* (200 - 1) + 1 ) ,
-      image: 'gamuza_hush.jpg'
-    }
-    this.guardarProducto (datos);
-  }
-
-  guardarProducto(product: IProduct){
-    console.log('Guardando producto: ', product);
-    this.productService.saveProducts(product).pipe(
-      switchMap(()=> this.productService.getProducts())
-    ).subscribe(products =>  this.productService.products.set(products))
-  }
-
-  isModalOpen = signal(false);
-  
-  abrirModal(){
-    console.log('Abriendo modal...');
-    this.isModalOpen.set(true);
-    console.log(this.isModalOpen);
-  }
-
-  cerrarModal(){
-    console.log('Cerrando Modal...');
-    this.isModalOpen.set(false);
-  }
-
-
-
-
-
+  protected readonly title = signal('Empresa ACME');
 }
-

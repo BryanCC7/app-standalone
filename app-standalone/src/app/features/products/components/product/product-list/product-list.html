@@ -9,8 +9,10 @@
                 <thead class="table-light">
                     <tr>
                         <th>
-                            <button (click)="toggleImage()" class="btn btn-primary" style="width: 50%;">
-                                {{ showImage ? 'Ocultar' : 'Mostrar' }} Imágenes
+                            <button class="btn btn-primary"
+                             style="width: 80%;" (click)="toggleImage()">
+                                <i class="bi bi-eye"></i>
+                                {{ showImage() ? 'Ocultar' : 'Mostrar' }} Imágenes
                             </button>
                         </th>
                         <th>Producto</th>
@@ -24,33 +26,29 @@
                     @for (producto of products; track producto.productId){
                     <tr>
                         <td>
-                            @if (showImage){
-                              <img [src]="producto.imageUrl | defaultImage" [alt]="producto.productName" class="img-thumbnail"
+                            @if(showImage()){
+                                <img [src]="producto.imageUrl | defaultImage" [alt]="producto.productName" class="img-thumbnail"
                                     style="max-width: 100px;">
                             }
-
                         </td>
                         <td>{{ producto.productName }}</td>
                         <td>{{ producto.productCode }}</td>
-                        <td>{{ producto.releaseDate }}</td>
+                        <td>{{ producto.releaseDate | date:'dd/MM/yyyy' }}</td>
                         <td>{{ producto.price }}</td>
-                        <td>
-                            <app-star [rating]="producto.starRating"></app-star>
-                        </td>
+                        <td><app-star [rating]="producto.starRating"></app-star></td>
                         <td>
                             <button class="btn btn-success" (click)="viewProduct(producto.productId)">
-                            |   <i class="bi bi-eye"></i>Ver
+                                <i class="bi bi-eye"></i> Ver
                             </button>
                             &nbsp;
                             <button class="btn btn-warning" (click)="editProduct(producto.productId, producto)">
-                                <i class="bi bi-pencil"></i>Editar
+                                <i class="bi bi-pencil"></i> Editar
                             </button>
-                            &nbsp;
-                            <button class="btn btn-danger" (click) ="deleteProduct(producto.productId)">
-                            |   <i class="bi bi-trash"></i>Borrar
+                             &nbsp;
+                            <button class="btn btn-danger" (click)="deleteProduct(producto.productId)">
+                                <i class="bi bi-trash"></i> Eliminar
                             </button>
                         </td>
-
                     </tr>
                     }
                 </tbody>

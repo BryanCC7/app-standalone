@@ -1,0 +1,16 @@
+.crop {
+    overflow: hidden;
+}
+
+div {
+    cursor: pointer;
+}
+
+.crop > div {
+    white-space: nowrap; 
+}
+
+.bi-star-fill {
+    font-size: 14px;
+    margin-right: 1px; 
+}

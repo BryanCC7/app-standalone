@@ -1,1 +1,33 @@
-<p>product works!</p>
+<div class="container-fluid">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <label class="form-label mb-0">Filtrar por:</label>
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="listFilter">
+        </div>
+        <div class="col-md-3">
+          <h5 class="mb-0 text-muted">Buscando: {{ listFilter() }}</h5>
+        </div>
+        <div class="col-md-2 text-end">
+          <button class="btn btn-primary" (click)="abrirModal()">Crear Producto</button>
+        </div>
+        <div class="col text-end">
+          <button class="btn btn-outline-primary" (click)="toggleChildren()">
+            {{ showChildren() ? 'Ocultar' : 'Mostrar' }} Lista
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (showChildren()) {
+    <app-product-list [datos]="filteredProducts()"></app-product-list>
+  }
+
+  @if (isModalOpen()) {
+    <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  }
+</div>
