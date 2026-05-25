@@ -4,9 +4,11 @@ import { Welcome } from './features/home/welcome/welcome';
 import { PageNotFound } from './features/not-found/page-not-found/page-not-found';
 import {Login} from './features/auth/components/login/login';
 
+import { loginGuard } from './features/auth/guards/login-guard';
+
 export const routes: Routes = [
-  { path: 'home', component: Welcome },
-  { path: 'products', component: ProductComponent },
+  { path: 'home', component: Welcome, canActivate: [loginGuard] },
+  { path: 'products', component: ProductComponent, canActivate:[loginGuard] },
   { path: 'login', component:Login},
   
   { path: '', redirectTo: 'home', pathMatch: 'full' },

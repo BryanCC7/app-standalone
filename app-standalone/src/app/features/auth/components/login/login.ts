@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
+import { Auth } from '../../services/auth'
+import { email } from '@angular/forms/signals';
+
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule],
@@ -7,16 +10,21 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   styleUrl: './login.css',
 })
 export class Login {
-  loginForm: FormGroup;
-  constructor(private formBuilder: FormBuilder) {
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
+  private formBuilder  = inject(FormBuilder);
+  private loginService = inject(Auth);
+
+  loginForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required, Validators.minLength(10)]
+  });
   
   login() {
-    console.log(this.loginForm.value.email);
-    console.log(this.loginForm.value.password);
+    let email: any = this.loginForm.value.email;
+    let password: any = this.loginForm.value.password;
+    this.loginService.login(email, password).subscribe(
+      data => {
+        console.log('Login successful:', data);
+      }
+    );
   }
 }

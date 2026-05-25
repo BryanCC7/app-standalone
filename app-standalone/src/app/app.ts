@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
+
+import { Auth as authService } from './features/auth/services/auth';
 
 @Component({
   standalone: true,
@@ -10,4 +12,5 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('Empresa ACME');
+  public authService = inject(authService);
 }
