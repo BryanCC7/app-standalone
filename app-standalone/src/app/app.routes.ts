@@ -9,10 +9,13 @@ import { User } from './features/users/components/user/user';
 
 import { loginGuard } from './features/auth/guards/login-guard';
 
+import { Map } from './features/maps/services/map';
+
 export const routes: Routes = [
 
   
   { path: 'home', component: Welcome, canActivate: [loginGuard] },
+  { path: 'maps', component: Map, canActivate:[loginGuard]},
   { path: 'products', component: ProductComponent, canActivate:[loginGuard] },
   { path: 'numbers', component: Number, canActivate: [loginGuard] },
   { path: 'users', component: User, canActivate:[loginGuard]},
