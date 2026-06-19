@@ -11,12 +11,15 @@ import { loginGuard } from './features/auth/guards/login-guard';
 
 import { Map } from './features/maps/services/map';
 
+import { ProductPagination } from './features/products/components/product-pagination/product-pagination';
+
 export const routes: Routes = [
 
   
   { path: 'home', component: Welcome, canActivate: [loginGuard] },
   { path: 'maps', component: Map, canActivate:[loginGuard]},
   { path: 'products', component: ProductComponent, canActivate:[loginGuard] },
+  {path: 'product-pagination', component: ProductPagination, canActivate:[loginGuard]},
   { path: 'numbers', component: Number, canActivate: [loginGuard] },
   { path: 'users', component: User, canActivate:[loginGuard]},
   { path: 'login', component:Login},

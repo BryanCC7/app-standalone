@@ -1,0 +1,49 @@
+<div class="card border-primary shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Lista de productos</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" bordered>
+                <thead>
+                <tr>
+                    <th>Imágenes</th>
+                    <th>Producto</th>
+                    <th>Código</th>
+                    <th>Disponible</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                    <tr *ngFor="let producto of products() | paginate: { itemsPerPage: 5, currentPage: p(), totalItems: total() }">
+                    <td>
+                        <img [src]="producto.image" width="50" height="50" alt="Imagen del producto" />
+                    </td>
+                    <td>{{ producto.productName }}</td>
+                    <td>{{ producto.productCode }}</td>
+                    <td>{{ producto.releaseDate | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ producto.price }}</td>
+                    <td>
+                        <button class="btn btn-success">
+                        <i class="bi bi-eye"></i> Ver
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Borrar
+                        </button>
+                    </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pagination-controls (pageChange)="p.set($event)"></pagination-controls>
+            
+        </div>
+    </div>
+</div>
