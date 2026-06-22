@@ -19,6 +19,7 @@ app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
+app.use(express.json());
 
 app.use(function(req,res,next){
   res.header('Access-Control-Allow-Origin', '*');
@@ -260,4 +261,109 @@ app.put('/upload/productos/:id', (req,res)=>{
       });
   });
 });
+
+const { OAuth2Client } = require('google-auth-library');
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
+// Login con Google
+app.post('/google-login', async (req, res) => {
+  const { googletoken } = req.body;
+  console.log('Token recibido: ' + googletoken);
+
+  try {
+    // 1. Verificamos el token con Google
+    const { name, email, picture } = await verifyGoogleToken(googletoken);
+
+    // 2. Buscamos al usuario en la base de datos
+    conn.query('SELECT * FROM usuarios WHERE userEmail = ?', [email], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error al consultar la base de datos',
+          error: err
+        });
+      }
+
+      // CASO A: El usuario NO existe -> Lo creamos y luego iniciamos sesión
+      if (!results || results.length === 0) {
+        console.log('Usuario no encontrado -> creando nuevo usuario');
+        
+        const datosUsuario = {
+          userName: name,
+          userEmail: email,
+          userImg: picture,
+        };
+
+        conn.query('INSERT INTO usuarios SET ?', datosUsuario, (err, result) => {
+          if (err) {
+            return res.status(500).json({
+              ok: false,
+              mensaje: 'Error al crear el usuario',
+              error: err
+            });
+          }
+
+          // Construimos el objeto de usuario recién creado (incluyendo su nuevo ID)
+          const newUser = {
+            id: result.insertId,
+            ...datosUsuario
+          };
+
+          console.log('Generar token para el nuevo usuario');
+          const token = jwt.sign({ usuario: newUser }, SEED, { expiresIn: 14400 });
+
+          // Retornamos la respuesta AQUÍ, dentro del callback del INSERT
+          return res.status(201).json({
+            ok: true,
+            mensaje: 'Usuario creado y login exitoso',
+            usuario: newUser,
+            token: token
+          });
+        });
+
+      } else {
+        // CASO B: El usuario SÍ existe -> Iniciamos sesión directamente
+        console.log('Usuario encontrado');
+        console.log('Generar token para el usuario existente');
+        
+        const user = results[0];
+        const token = jwt.sign({ usuario: user }, SEED, { expiresIn: 14400 });
+
+        return res.status(200).json({
+          ok: true,
+          mensaje: 'Login exitoso',
+          usuario: user,
+          token: token
+        });
+      }
+    });
+
+  } catch (error) {
+    return res.status(401).json({
+      ok: false,
+      mensaje: 'Token no válido',
+      error: error.message || error
+    });
+  }
+});
+
+// Verificar el token de Google
+async function verifyGoogleToken(token) {
+  const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+  
+  // 📍 CORREGIDO: El objeto de configuración ahora está correctamente estructurado dentro de los paréntesis
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: GOOGLE_CLIENT_ID,
+  });
+  
+  const payload = ticket.getPayload();
+  console.log(payload);
+  
+  return {
+    name: payload.name,
+    email: payload.email,
+    picture: payload.picture
+  };
+}
 

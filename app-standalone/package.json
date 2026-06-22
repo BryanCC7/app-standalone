@@ -11,6 +11,7 @@
   "private": true,
   "packageManager": "npm@11.11.0",
   "dependencies": {
+    "@abacritt/angularx-social-login": "^2.6.0",
     "@angular/cdk": "^21.2.14",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
@@ -24,6 +25,7 @@
     "bootstrap-icons": "^1.13.1",
     "cors": "^2.8.6",
     "faker": "^6.6.6",
+    "google-auth-library": "^10.7.0",
     "ngx-pagination": "^6.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

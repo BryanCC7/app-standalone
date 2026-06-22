@@ -11,6 +11,8 @@ export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
 
+  private apiUrl = 'http://localhost:3000';
+
   constructor(){
     this.isAutenticated.set(!!localStorage.getItem('token'));
   }
@@ -32,5 +34,23 @@ export class Auth {
     localStorage.removeItem('usuario');
     this.isAutenticated.set(false); //Actualizar el estado de autenticación
     this.router.navigate(['/login']);
+  }
+
+  public loginGoogle(token: string) {
+    const header = { 'Content-Type': 'application/json' };
+    
+    // 📍 CORREGIDO: El backend Node.js que arreglamos antes espera recibir 'googletoken', no 'token'
+    let googleToken = { googletoken: token }; 
+
+    // 📍 CORREGIDO: Las comillas invertidas (backticks) del string ahora se cierran correctamente
+    return this.http.post(`${this.apiUrl}/google-login`, googleToken, { headers: header }).pipe(
+      map((resp: any) => {
+        console.log('Login with Google successful:', resp);
+        localStorage.setItem('token', resp.token);
+        localStorage.setItem('usuario', JSON.stringify(resp.usuario));
+        this.isAutenticated.set(true);
+        this.router.navigate(['/home']);
+      })
+    );
   }
 }
