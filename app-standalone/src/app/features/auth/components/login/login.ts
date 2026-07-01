@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
+import { RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth'
-import { email } from '@angular/forms/signals';
 import { SocialAuthService, GoogleSigninButtonModule, SocialUser } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, GoogleSigninButtonModule],
+  imports: [ReactiveFormsModule, GoogleSigninButtonModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -23,7 +23,6 @@ export class Login {
             console.log('Google login successful:', data);
           },
           error: (err) => {
-            // 📍 Añadido: Manejo de errores por si falla la conexión con tu backend
             console.error('Error al intentar hacer login con Google en el backend:', err);
           }
         });

@@ -8,10 +8,13 @@ import { Number } from './features/numbers/components/number/number';
 import { User } from './features/users/components/user/user';
 
 import { loginGuard } from './features/auth/guards/login-guard';
+import { ForgotPassword } from './features/auth/components/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/components/reset-password/reset-password';
 
 import { Map } from './features/maps/services/map';
 
 import { ProductPagination } from './features/products/components/product-pagination/product-pagination';
+import { ProductSales } from './features/dashboards/components/product-sales/product-sales';
 
 export const routes: Routes = [
 
@@ -22,7 +25,10 @@ export const routes: Routes = [
   {path: 'product-pagination', component: ProductPagination, canActivate:[loginGuard]},
   { path: 'numbers', component: Number, canActivate: [loginGuard] },
   { path: 'users', component: User, canActivate:[loginGuard]},
+  { path: 'dashboards', component: ProductSales, canActivate:[loginGuard]},
   { path: 'login', component:Login},
+  { path: 'forgot-password', component: ForgotPassword },
+  { path: 'reset-password', component: ResetPassword },
   
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   

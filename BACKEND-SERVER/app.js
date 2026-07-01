@@ -1,4 +1,5 @@
 //Requires
+require('dotenv').config({ path: '.env.dev' });
 var express = require('express');
 var mysql = require('mysql');
 var fileUpload = require('express-fileupload');
@@ -6,7 +7,7 @@ var cors = require('cors');
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
-let SEED = "esta-es-una-semilla-para-generar-el-token";
+let SEED = process.env.JWT_SEED || "esta-es-una-semilla-para-generar-el-token";
 
 
 
@@ -33,10 +34,10 @@ app.use(function(req,res,next){
 
 // Conexión con la base de datos
 const conn = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'acme'
+  host: process.env.DBHOST || 'localhost',
+  user: process.env.DBUSER || 'root',
+  password: process.env.DBPASSWORD || '',
+  database: process.env.DBNAME || 'acme'
 });
 
 conn.connect();
@@ -107,9 +108,83 @@ app.post('/login', (req, res) => {
   });
 });
 
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASS
+  }
+});
+
+const resetTokens = new Map();
+
+app.post('/email-test', async (req, res) => {
+  const { to, subject, text } = req.body;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: to || process.env.EMAIL_TO,
+    subject: subject || 'Correo de prueba desde ACME',
+    text: text || '¡Funciona! El envío de email con Nodemailer está operativo.'
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    res.json({ ok: true, mensaje: 'Correo enviado exitosamente' });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al enviar correo', error: error.message });
+  }
+});
+
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  const sql = 'SELECT * FROM usuarios WHERE userEmail = ?';
+  conn.query(sql, [email], async (err, results) => {
+    if (err || results.length === 0) {
+      return res.json({ ok: true, mensaje: 'Si el correo existe, recibirás instrucciones' });
+    }
+    const token = crypto.randomBytes(32).toString('hex');
+    resetTokens.set(token, { email, expires: Date.now() + 900000 });
+    const resetLink = `http://localhost:4200/reset-password?token=${token}`;
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Recuperación de contraseña - ACME',
+        html: `<p>Has solicitado recuperar tu contraseña.</p>
+               <p>Haz clic en el siguiente enlace para restablecerla:</p>
+               <a href="${resetLink}">${resetLink}</a>
+               <p>Este enlace expira en 15 minutos.</p>
+               <p>Si no solicitaste esto, ignora este mensaje.</p>`
+      });
+      res.json({ ok: true, mensaje: 'Si el correo existe, recibirás instrucciones' });
+    } catch (error) {
+      res.status(500).json({ ok: false, mensaje: 'Error al enviar correo', error: error.message });
+    }
+  });
+});
+
+app.post('/reset-password', (req, res) => {
+  const { token, password } = req.body;
+  const stored = resetTokens.get(token);
+  if (!stored || stored.expires < Date.now()) {
+    return res.status(400).json({ ok: false, mensaje: 'Token inválido o expirado' });
+  }
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  const sql = 'UPDATE usuarios SET userPassword = ? WHERE userEmail = ?';
+  conn.query(sql, [hashedPassword, stored.email], (err) => {
+    if (err) return res.status(500).json({ ok: false, mensaje: 'Error al actualizar' });
+    resetTokens.delete(token);
+    res.json({ ok: true, mensaje: 'Contraseña actualizada exitosamente' });
+  });
+});
+
 app.use(function(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split('')[1];
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
     return res.status(401).json({
       ok: false,

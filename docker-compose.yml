@@ -1,0 +1,58 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: acme-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: acme
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./BACKEND-SERVER/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - acme-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./BACKEND-SERVER
+    container_name: acme-backend
+    environment:
+      DBHOST: mysql
+      DBPORT: 3306
+      DBUSER: root
+      DBPASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DBNAME: acme
+      JWT_SEED: ${JWT_SEED}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    ports:
+      - "3000:3000"
+    volumes:
+      - uploads_data:/app/upload
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - acme-network
+
+  frontend:
+    build: ./app-standalone
+    container_name: acme-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - acme-network
+
+volumes:
+  mysql_data:
+  uploads_data:
+
+networks:
+  acme-network:
+    driver: bridge
